@@ -1,6 +1,8 @@
 import './style.css'
-import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged ,updateProfile, signOut } from "firebase/auth";
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged ,updateProfile, signOut, updateEmail} from "firebase/auth";
 import { initializeApp } from "firebase/app";
+
+
 
 
 
@@ -20,12 +22,23 @@ const provider = new GoogleAuthProvider();
 
 const auth = getAuth();
 
+const user = auth.currentUser;
+
+
+
+
 let userName,email,photo,status,Log = "Login";
+
 
 
 window.addEventListener("DOMContentLoaded",() =>{
   appendElements();
 })
+
+async function appender (e){
+  e.preventDefault();
+  console.log("dobe");
+}
 
 
 
@@ -65,15 +78,19 @@ function appendElements(){
                     <input disabled class="email-inp" value=${email? email : ""}>
                     <p class="edit" data="email">Edit</p>
                   </div>
+                  <button class="save-btn" style="display:none">Save</button>
               </div>
           </div>
         </div>
     </div>
     <form>
+      <button class="appender__data">Append</button>
       <button class="login">${Log}</button>
     </form>
   </div>
 `
+
+document.querySelector(".appender__data").addEventListener("click",appender)
 
 document.querySelector(".login").addEventListener("click",(e) =>{
   e.preventDefault();
@@ -110,13 +127,40 @@ document.querySelector(".login").addEventListener("click",(e) =>{
 document.querySelectorAll(".edit").forEach((e) =>{
   e.addEventListener("click",({target}) =>{
     if(target.getAttribute("data") == "name"){
+      document.querySelector(".save-btn").style.display = "block";
       document.querySelector(".name-inp").removeAttribute("disabled");       
-      document.querySelector(".email-inp").setAttribute("disabled",null);       
+      document.querySelector(".email-inp").setAttribute("disabled",null);   
     }else{
+      document.querySelector(".save-btn").style.display = "block";
       document.querySelector(".email-inp").removeAttribute("disabled"); 
       document.querySelector(".name-inp").setAttribute("disabled",null);       
     }
   })
 })
 
+document.querySelector(".save-btn").addEventListener("click",({target}) =>{
+  target.style.display = "none";
+  document.querySelector(".name-inp").setAttribute("disabled",null);       
+  document.querySelector(".email-inp").setAttribute("disabled",null);       
+  if(confirm("You Will Update Your Profile Data")){
+    updateProfile(auth.currentUser, {
+      displayName:  document.querySelector(".name-inp").value,
+    }).then(() => {
+
+    }).catch((error) => {
+      // An error occurred
+      // ...
+    });
+
+
+    updateEmail(auth.currentUser,document.querySelector(".email-inp").value).then(() => {
+      alert("Your Data has been Updated");
+    }).catch((error) => {
+      // An error occurred
+      // ...
+    });
+  }
+})
+
 }
+

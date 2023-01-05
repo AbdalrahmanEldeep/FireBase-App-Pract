@@ -74,3 +74,14 @@ form button{
   border-radius: 2px;
   cursor: pointer;
 }
+.save-btn{
+  padding: 10px 30px;
+  background-color: rgb(16, 29, 29);
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 5px;
+  width: 100%;
+  cursor: pointer;
+  margin-top: 30px;
+}
