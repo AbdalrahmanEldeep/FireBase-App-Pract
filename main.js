@@ -1,6 +1,7 @@
 import './style.css'
 import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged ,updateProfile, signOut, updateEmail} from "firebase/auth";
 import { initializeApp } from "firebase/app";
+import { getDatabase,ref, set ,onValue ,child, push, update} from "firebase/database";
 
 
 
@@ -12,7 +13,9 @@ const firebaseConfig = {
   projectId: "tester-f939c",
   storageBucket: "tester-f939c.appspot.com",
   messagingSenderId: "620325325006",
-  appId: "1:620325325006:web:23da646a44f45a0e78689f"
+  appId: "1:620325325006:web:23da646a44f45a0e78689f",
+  databaseURL: "https://tester-f939c-default-rtdb.firebaseio.com",
+
 };
 
 // Initialize Firebase
@@ -23,6 +26,7 @@ const provider = new GoogleAuthProvider();
 const auth = getAuth();
 
 const user = auth.currentUser;
+const db = getDatabase(app);
 
 
 
@@ -35,12 +39,36 @@ window.addEventListener("DOMContentLoaded",() =>{
   appendElements();
 })
 
-async function appender (e){
+function writeUserData(e,userId, name, email, imageUrl) {
   e.preventDefault();
-  console.log("dobe");
+  console.log("done");
+  set(ref(db, `users/${Math.floor(Math.random()*1000)}`), {
+    username: name,
+    email: email,
+    profile_picture : imageUrl
+  });
+  set(ref(db, 'admins/' + userId), {
+    username: name,
+    email: email,
+    profile_picture : imageUrl
+  });
 }
 
+function writeNewPost(userId, name, email, imageUrl) {
+  // A post entry.
+  const postData = {
+    userId,
+    name,
+    email,
+    imageUrl
+  };
 
+
+  const updates = {};
+  updates['/users/' + userId] = postData;
+
+  return update(ref(db), updates);
+}
 
 onAuthStateChanged(auth, (user) => {
   if (user) {
@@ -85,12 +113,27 @@ function appendElements(){
     </div>
     <form>
       <button class="appender__data">Append</button>
+      <button class="get__data">Get</button>
+      <button class="update__data">Update</button>
       <button class="login">${Log}</button>
     </form>
   </div>
 `
 
-document.querySelector(".appender__data").addEventListener("click",appender)
+document.querySelector(".appender__data").addEventListener("click",(e) => writeUserData(e,"283","abdo","abdo.eslam2022@gamil.com","asdjd"))
+document.querySelector(".get__data").addEventListener("click",(e) => {
+  e.preventDefault();
+  const starCountRef = ref(db, 'users');
+  onValue(starCountRef, (snapshot) => {
+    const data = snapshot.val();
+    // updateStarCount(postElement, data);
+    console.log(data);
+  });
+})
+document.querySelector(".update__data").addEventListener("click",async (e)  => {
+  e.preventDefault();
+   writeNewPost("243","eslamsadassasdasd20200","Asdasd","Dasdasdas");
+})
 
 document.querySelector(".login").addEventListener("click",(e) =>{
   e.preventDefault();
