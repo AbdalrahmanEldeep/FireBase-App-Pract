@@ -58,12 +58,12 @@ function appendElements(){
               <div class="user-photo"><img src="${photo}" alt /></div>
                 <div class ="user-name-email">
                   <div class="inp-box">
-                     <input disabled value= ${userName ? userName :""}>
-                     <p>Edit</p> 
+                     <input disabled class="name-inp" value= ${userName ? userName :""}>
+                     <p class="edit" data="name">Edit</p> 
                   </div>
                   <div class="inp-box">
-                    <input disabled value=${email? email : ""}>
-                    <p>Edit</p>
+                    <input disabled class="email-inp" value=${email? email : ""}>
+                    <p class="edit" data="email">Edit</p>
                   </div>
               </div>
           </div>
@@ -74,6 +74,7 @@ function appendElements(){
     </form>
   </div>
 `
+
 document.querySelector(".login").addEventListener("click",(e) =>{
   e.preventDefault();
   if(status){
@@ -105,8 +106,17 @@ document.querySelector(".login").addEventListener("click",(e) =>{
   }
 })
 
+
+document.querySelectorAll(".edit").forEach((e) =>{
+  e.addEventListener("click",({target}) =>{
+    if(target.getAttribute("data") == "name"){
+      document.querySelector(".name-inp").removeAttribute("disabled");       
+      document.querySelector(".email-inp").setAttribute("disabled",null);       
+    }else{
+      document.querySelector(".email-inp").removeAttribute("disabled"); 
+      document.querySelector(".name-inp").setAttribute("disabled",null);       
+    }
+  })
+})
+
 }
-
-
-
-
